@@ -3,122 +3,143 @@ package org.example.beans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.*;
 
-@Component
-@Scope("prototype")
+@Service
+@Scope("singleton")
 public class LibraryImpl implements Library{
 
-    private int bookId=1000;
-    public Map<Integer ,Book> bookRack = new HashMap();
-
-    private String name;
-    private List<Book> books ;
-
-    @Autowired
+    private final int indexOfTitle = 0;
+    private final int indexOfAuthor = 1;
+    private final int indexOfPrice = 2;
+    private String libName;
     private ApplicationContext context;
 
-    public LibraryImpl(String name){
-        this.name = name;
-        books = new ArrayList<>();
+    ArrayList< ArrayList<String> > booklst = new ArrayList<>();
+    ArrayList<String> noteBook;
+
+    public LibraryImpl(ApplicationContext context, String name){
+        this.context = context;
+        this.libName = name;
     }
 
     @Override
     public void addBook(Book book) {
-        books.add(book);
-        bookRack.put( ++bookId , book);
+        noteBook = new ArrayList<>();
+
+        noteBook.add(book.getTitle());
+        noteBook.add(book.getAuthor().getName()) ;
+        noteBook.add(book.getPrice());
+
+        booklst.add(noteBook);
     }
 
     @Override
     public void displayBooks(){
-        for(Book book : books ){
-            System.out.print("Books from "+name+" : ");
-            System.out.print(book.getTitle());
-            System.out.print("\t");
-            System.out.print(book.getPrice());
-            System.out.print("\t");
-            System.out.print(book.getAuthor().getName());
-            System.out.println("\n");
+        System.out.println("Books in \""+libName+"\" : ");
+        for(ArrayList<String> one : booklst){
+            System.out.println(one);
         }
     }
 
-    //Igrnor Following, Temp Logics done..
     @Override
-    public void removeBook(Book book) {
-        books.remove(book);
+    public void removeBook(String title) {
+
+        ArrayList<String> noteBook = findBook(title);
+
+        if( noteBook == null){
+            System.out.println("-------Book Not Found!!-------");
+        }
+        else{
+            booklst.remove( noteBook );
+            System.out.println("-------Book Removed-------");
+            displayBooks();
+        }
     }
 
     @Override
-    public boolean idBookExists(String title) {
-        for(Book book: books){
-            if( book.getTitle().equals(title) ){
-                return true;
-            }
+    public void isBookExists(String title) {
+        if( findBook(title) == null ) {
+            System.out.println("No, \""+title+ "\" is't exists.");
+            return;
         }
-        return false;
+        System.out.println("Yes, \""+title+ "\" is exists in "+libName);
     }
 
     @Override
     public void removeAllBooks() {
-        books.clear();
+        System.out.println("Clearing books...");
+        booklst.clear();
+        System.out.println("-------\nNow Library has ZERO books.\n-------");
     }
 
     @Override
-    public void updatePrice(String title , int newPrice) {
-        for(Book book : books ){
-            if ( book.getTitle().equals(title)){
-                book.setPrice(newPrice);
-            }
+    public void updatePrice(String title , String newPrice) {
+        ArrayList<String> noteBook = findBook(title);
+        if( noteBook == null ){
+            System.out.println("-------Book Not Found!!-------");
+        }
+        else{
+            noteBook.set(indexOfPrice , newPrice);
+            System.out.println("\n-------Price of \""+title+"\" Updated-------");
+            displayBooks();
         }
     }
 
     @Override
-    public void getBook(String title) {
-        boolean flag = false;
-        for(Book book : books ){
-            if ( book.getTitle().equals(title)) {
-                flag = true;
-                System.out.println(book.getTitle());
-                System.out.println(book.getPrice());
-                System.out.println(book.getAuthor().getName());
-                // break;
-            }
+    public void getBookDetails(String title) {
+
+        ArrayList<String> book = findBook(title);
+
+        if( book == null ){
+            System.out.println("-------Book Not Found!!-------");
         }
-        if(! flag)
-            System.out.println("Book Not Found!!!");
+        else{
+            System.out.println("\nDetails of book:");
+            System.out.println("Title : "+book.get(indexOfTitle));
+            System.out.println("Author : "+book.get(indexOfAuthor));
+            System.out.println("Price : "+book.get(indexOfPrice));
+        }
     }
 
     @Override
-    public void getCollecetionOfAuthor(String authorName) {
+    public void authorsAllBooks(String authorName) {
         List<String> authorBooks = new ArrayList<>();
-        for(Book book : books ){
-            if ( book.getAuthor().getName().equals(authorName) ) {
-               authorBooks.add(book.getTitle());
+
+        for(ArrayList<String> book : booklst ){
+            if( book.get(indexOfAuthor).equals(authorName) ){
+                authorBooks.add( book.get(indexOfTitle) );
             }
         }
-        System.out.println("All books By "+authorName+ " are : "+authorBooks);
+        System.out.println("\nAll books By \""+authorName+ "\" are : \n");
+        for(int i=0 ; i< authorBooks.size() ; i++){
+            System.out.println(i+1 +" "+ authorBooks.get(i) );
+        }
     }
 
-
     @Override
-    public void displayWithMap(){
-        //System.out.println(bookRack.entrySet());
-        for(Map.Entry<Integer,Book> entry : bookRack.entrySet()){
-            System.out.print("Book : "+entry.getKey() );
-            System.out.print("\t");
-            System.out.print(entry.getValue().getTitle());
-            System.out.print("\t");
-            System.out.print(entry.getValue().getPrice());
-            System.out.print("\t");
-            System.out.print(entry.getValue().getAuthor().getName());
-            System.out.println("\n");
+    public ArrayList<String> findBook(String title){
+        for(ArrayList<String> book : booklst ){
+            if( book.get(indexOfTitle).equals(title) ){
+                return book;
+            }
         }
+        return null;
+    }
+
+    @PostConstruct
+    public void init(){
+        System.out.println("\nInitializing Library with name = "+libName);
+    }
+
+    @PreDestroy
+    public  void clean(){
+        System.out.println("Destroying....");
+        booklst.clear();
     }
 
 }

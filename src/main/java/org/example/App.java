@@ -5,66 +5,131 @@ import org.example.configuration.AppConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.Scanner;
+
 public class App 
 {
     public static void main( String[] args )
     {
+        int actionNumber;
+        String title;
+        String price;
+        String name;
+        Book book;
+        LibraryImpl lib;
+
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
         Author author1 = context.getBean(Author.class,"Prince");
-        Author author2 = context.getBean(Author.class,"Patel");
+        lib= context.getBean(LibraryImpl.class,context,"Ahmedabad_Lib");
+        book = context.getBean(Book.class,author1);
 
-        Book book1 = context.getBean(Book.class ,"Oneee",2550, author1 );
-        Book book2 = context.getBean(Book.class ,"Twoooo",999, author1 );
-        Book book3 = context.getBean(Book.class ,"Threeee",555, author2 );
-        Book book4 = context.getBean(Book.class ,"Fourrr",2550, author1 );
-        Book book5 = context.getBean(Book.class ,"Fivee",999, author1 );
-        Book book6 = context.getBean(Book.class ,"SIX",555, author2 );
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the Library Management :)");
 
-        LibraryImpl lib1= context.getBean(LibraryImpl.class,"Ahmedabad_Lib");
-        LibraryImpl lib2= context.getBean(LibraryImpl.class,"Gandhinagar_Lib");
-        LibraryImpl lib3= context.getBean(LibraryImpl.class,"Mehsana_Lib");
+        do{
+            System.out.println("\nFollowings are action numbers with description : " +
+                    "\n1 -> Add a new book." +
+                    "\n2 -> Print all books in library." +
+                    "\n3 -> Remove book by title. "+
+                    "\n4 -> Is book Exsists by title. " +
+                    "\n5 -> Remove all books from library." +
+                    "\n6 -> Update book price." +
+                    "\n7 -> Get book details by title." +
+                    "\n8 -> All books of author by name."+
+                    "\n0 -> Exit from app.");
 
+            System.out.print("==> Enter Action number: ");
 
-        lib1.addBook(book1);
-        lib1.addBook(book2);
-        lib1.addBook(book3);
-        lib1.addBook(book4);
-        lib1.addBook(book5);
-        lib1.addBook(book6);
+            try {
+                actionNumber = scanner.nextInt();
+            }
+            catch (Exception e){
+                actionNumber = -1;
+            }
 
-        lib2.addBook(book1);
-        lib2.addBook(book3);
-        lib2.addBook(book5);
+            switch (actionNumber){
+                case 1: {
+                    System.out.print("Enter book Title : ");
+                    scanner.nextLine();
+                    title = scanner.nextLine().trim();
+                    book.setTitle(title);
 
-        lib3.addBook(book2);
-        lib3.addBook(book4);
-        lib3.addBook(book6);
+                    System.out.print("Enter book Price in numbers only : ");
+                    price = scanner.next().trim();
+                    book.setPrice(price);
 
+                    lib.addBook(book);
+                    break;
+                }
 
-        System.out.println("Data from Library one : ");
-        lib1.displayBooks();
+                case 2: {
+                    System.out.println("\n==> Collection of our library: ");
+                    lib.displayBooks();
+                    break;
+                }
 
-        System.out.println("\nData from Library two : ");
-        lib2.displayBooks();
+                case 3: {
+                    System.out.print("Enter title of book to remove : ");
+                    scanner.nextLine();
+                    title = scanner.nextLine().trim();
+                    lib.removeBook(title);
+                    break;
+                }
 
-        System.out.println("\nData from Library Three : ");
-        lib3.displayBooks();
+                case 4: {
+                    System.out.print("Enter title of book to check is exsists : ");
+                    scanner.nextLine();
+                    title = scanner.nextLine().trim();
+                    lib.isBookExists(title);
+                    break;
+                }
 
+                case 5:{
+                    lib.removeAllBooks();
+                    break;
+                }
 
-        //Ignore
+                case 6: {
+                    System.out.print("Enter book Title for Update Price : ");
+                    scanner.nextLine();
+                    title = scanner.nextLine().trim();
 
-        //Phase TWO
+                    System.out.print("Enter new Price in numbers : ");
+                    price = scanner.next().trim();
 
-//        LibraryService libService = context.getBean(LibraryService.class);
-//
-//        libService.addBook(book1);
-//        libService.addBook(book2);
-//        libService.addBook(book3);
-//        libService.addBook(book4);
-//        libService.addBook(book5);
-//        libService.addBook(book6);
-//
-//        libService.getLibDetails();
+                    lib.updatePrice(title,price);
+                    break;
+                }
+
+                case 7: {
+                    System.out.print("Enter title of book to get details : ");
+                    scanner.nextLine();
+                    title = scanner.nextLine().trim();
+                    lib.getBookDetails(title);
+                    break;
+                }
+
+                case 8: {
+                    System.out.print("Enter author name and get all books title : ");
+                    scanner.nextLine();
+                    name = scanner.nextLine().trim();
+                    lib.authorsAllBooks(name);
+                    break;
+                }
+
+                case 0: {
+                    System.out.println("Closing....");
+                    break;
+                }
+
+                default:{
+                    System.out.println("\nInvalid action number!!\n" +
+                            "Try with only above mentioned please...");
+                }
+            }
+        }
+        while ( actionNumber!=0 );
+
     }
 }

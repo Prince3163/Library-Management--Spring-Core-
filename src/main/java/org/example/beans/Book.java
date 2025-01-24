@@ -8,32 +8,30 @@ import org.springframework.stereotype.Component;
 public class Book {
     private Author author;
     private String title;
-    private int price;
+    private String price;
 
-    public Book(String title, int price , Author author) {
-        //Do this Firsttt
-        this.title = title;
-        this.price = price;
+    public Book(Author author) {
         this.author = author;
-    }
-
-    public Author getAuthor(){
-        return author;
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
+    public void setPrice(String  price) {
+        this.price = price;
+    }
+
+
     public String getTitle() {
         return title;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public String getPrice() {
+        return price;
     }
 
-    public int getPrice() {
-        return price;
+    public Author getAuthor(){
+        return author;
     }
 }
