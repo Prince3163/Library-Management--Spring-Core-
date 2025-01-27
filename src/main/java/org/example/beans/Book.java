@@ -4,15 +4,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("prototype")
+@Scope("singleton")
 public class Book {
     private Author author;
     private String title;
     private String price;
-
-    public Book(Author author) {
-        this.author = author;
-    }
 
     public void setTitle(String title) {
         this.title = title;
@@ -20,6 +16,10 @@ public class Book {
 
     public void setPrice(String  price) {
         this.price = price;
+    }
+
+    public void setAuthor(Author  author) {
+        this.author = author;
     }
 
 

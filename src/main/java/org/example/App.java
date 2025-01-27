@@ -15,14 +15,15 @@ public class App
         String title;
         String price;
         String name;
-        Book book;
         LibraryImpl lib;
+        Author author;
+        Book book;
 
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
-        Author author1 = context.getBean(Author.class,"Prince");
-        lib= context.getBean(LibraryImpl.class,context,"Ahmedabad_Lib");
-        book = context.getBean(Book.class,author1);
+        lib= context.getBean(LibraryImpl.class, "Ahmedabad_Lib");
+        author= context.getBean(Author.class);
+        book = context.getBean(Book.class);
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the Library Management :)");
@@ -42,7 +43,8 @@ public class App
             System.out.print("==> Enter Action number: ");
 
             try {
-                actionNumber = scanner.nextInt();
+                String action = scanner.nextLine();
+                actionNumber = Integer.parseInt(action);
             }
             catch (Exception e){
                 actionNumber = -1;
@@ -51,9 +53,14 @@ public class App
             switch (actionNumber){
                 case 1: {
                     System.out.print("Enter book Title : ");
-                    scanner.nextLine();
+                    //scanner.nextLine();
                     title = scanner.nextLine().trim();
                     book.setTitle(title);
+
+                    System.out.print("Enter Author name : ");
+                    name = scanner.nextLine().trim();
+                    author.setName(name);
+                    book.setAuthor(author);
 
                     System.out.print("Enter book Price in numbers only : ");
                     price = scanner.next().trim();
@@ -71,7 +78,7 @@ public class App
 
                 case 3: {
                     System.out.print("Enter title of book to remove : ");
-                    scanner.nextLine();
+                    //scanner.nextLine();
                     title = scanner.nextLine().trim();
                     lib.removeBook(title);
                     break;
@@ -79,7 +86,7 @@ public class App
 
                 case 4: {
                     System.out.print("Enter title of book to check is exsists : ");
-                    scanner.nextLine();
+                    //scanner.nextLine();
                     title = scanner.nextLine().trim();
                     lib.isBookExists(title);
                     break;
@@ -92,7 +99,7 @@ public class App
 
                 case 6: {
                     System.out.print("Enter book Title for Update Price : ");
-                    scanner.nextLine();
+                    //scanner.nextLine();
                     title = scanner.nextLine().trim();
 
                     System.out.print("Enter new Price in numbers : ");
@@ -104,7 +111,7 @@ public class App
 
                 case 7: {
                     System.out.print("Enter title of book to get details : ");
-                    scanner.nextLine();
+                    //scanner.nextLine();
                     title = scanner.nextLine().trim();
                     lib.getBookDetails(title);
                     break;
@@ -112,7 +119,7 @@ public class App
 
                 case 8: {
                     System.out.print("Enter author name and get all books title : ");
-                    scanner.nextLine();
+                    //scanner.nextLine();
                     name = scanner.nextLine().trim();
                     lib.authorsAllBooks(name);
                     break;

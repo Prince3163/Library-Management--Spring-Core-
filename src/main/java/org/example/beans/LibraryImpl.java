@@ -1,7 +1,5 @@
 package org.example.beans;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -10,20 +8,18 @@ import javax.annotation.PreDestroy;
 import java.util.*;
 
 @Service
-@Scope("singleton")
+@Scope("prototype")
 public class LibraryImpl implements Library{
 
     private final int indexOfTitle = 0;
     private final int indexOfAuthor = 1;
     private final int indexOfPrice = 2;
     private String libName;
-    private ApplicationContext context;
 
     ArrayList< ArrayList<String> > booklst = new ArrayList<>();
     ArrayList<String> noteBook;
 
-    public LibraryImpl(ApplicationContext context, String name){
-        this.context = context;
+    public LibraryImpl(String name){
         this.libName = name;
     }
 
@@ -138,7 +134,7 @@ public class LibraryImpl implements Library{
 
     @PreDestroy
     public  void clean(){
-        System.out.println("Destroying....");
+        System.out.println("Destroying ....");
         booklst.clear();
     }
 
